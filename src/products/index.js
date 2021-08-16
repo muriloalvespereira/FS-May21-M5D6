@@ -1,6 +1,8 @@
 import express from "express"
 import { getProducts, writeProduct } from "../lib/fs-tools.js"
 import uniqid from "uniqid"
+import multer from "multer"
+import { saveProductPicture } from "../lib/fs-tools.js"
 
 const Products = express.Router()
 
@@ -13,6 +15,14 @@ Products.post("/", async (req, res) => {
 
         await writeProduct(allProducts)
         res.status(201).send(product); 
+    } catch (error) {
+        res.status(500).send({ success: false, message: "Generic Server Error" }) 
+    }
+})
+Products.post("/addimg", multer().single("image"), async (req, res) => {
+    try {
+        await saveProductPicture(req.file.originalname, req.file.buffer)
+        res.send("Uploaded!")
     } catch (error) {
         res.status(500).send({ success: false, message: "Generic Server Error" }) 
     }
