@@ -41,14 +41,14 @@ Reviews.get("/:_id", async (req, resp, next) => {
   }
 });
 
-Reviews.post("/", async (req, resp, next) => {
+Reviews.post("/:productID", async (req, resp, next) => {
   try {
     const reviewsPath = join(
       dirname(fileURLToPath(import.meta.url)),
       "reviews.json"
     );
     const reviews = await readJSON(reviewsPath);
-    const newReview = { ...req.body, _id: uniqid(), createdAt: new Date() };
+    const newReview = { ...req.body, _id: uniqid(), productId: req.params.productID, createdAt: new Date() };
     const createReview = (content) => writeJSON(reviewsPath, content);
     reviews.push(newReview);
     await createReview(reviews);
