@@ -1,3 +1,4 @@
+
 import express from "express";
 import { getProducts, writeProduct } from "../lib/fs-tools.js";
 import uniqid from "uniqid";
@@ -7,6 +8,8 @@ import fs from "fs-extra";
 import { productValidationMiddleware } from "./validation.js";
 import { validationResult } from "express-validator";
 import createHttpError from "http-errors";
+import multer from "multer"
+import { saveProductPicture } from "../lib/fs-tools.js"
 
 const Products = express.Router();
 
@@ -34,6 +37,16 @@ Products.post("/", productValidationMiddleware, async (req, res, next) => {
     next(error);
   }
 });
+
+Products.post("/addimg", multer().single("image"), async (req, res) => {
+    try {
+        await saveProductPicture(req.file.originalname, req.file.buffer)
+        res.send("Uploaded!")
+    } catch (error) {
+        res.status(500).send({ success: false, message: "Generic Server Error" }) 
+    }
+})
+
 Products.get("/", async (req, res) => {
   try {
     const allProducts = await getProducts();

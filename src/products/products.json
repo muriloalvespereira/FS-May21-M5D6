@@ -4,6 +4,7 @@
     "name": "3310",
     "description": "somthing longer",
     "brand": "nokia",
+    "imageUrl": "http://imageurl.com",
     "price": 100,
     "category": "smartphones",
     "createdAt": "2019-07-19T09:32:10.535Z",

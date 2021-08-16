@@ -1,7 +1,9 @@
-import express from "express";
-import cors from "cors";
-import Products from "./products/index.js";
-import Reviews from "./reviews/index.js";
+
+import express from "express"
+import cors from "cors"
+import Products from "./products/index.js"
+import Reviews from "./reviews/index.js"
+import { join } from "path"
 import {
   notFoundErrorHandler,
   forbiddenErrorHandler,
@@ -9,12 +11,17 @@ import {
   genericServerErrorHandler,
 } from "./errorHandlers.js";
 
-const server = express();
+const server = express()
+const port = 3005
 
-const port = 3005;
+const publicFolderPath = join(process.cwd(), "public")
 
-server.use(cors());
-server.use(express.json());
+
+server.use(express.static(publicFolderPath))
+console.log(publicFolderPath)
+
+server.use(cors())
+server.use(express.json()) 
 
 server.use("/products", Products);
 server.use("/reviews", Reviews);
