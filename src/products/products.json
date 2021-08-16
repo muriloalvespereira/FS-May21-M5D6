@@ -1,6 +1,6 @@
 [
   {
-    "_id": "5d318e1a8541744830bef139",
+    "id": "5d318e1a8541744830bef139",
     "name": "3310",
     "description": "somthing longer",
     "brand": "nokia",
@@ -8,5 +8,16 @@
     "category": "smartphones",
     "createdAt": "2019-07-19T09:32:10.535Z",
     "updatedAt": "2019-07-19T09:32:10.535Z"
+  },
+  {
+    "name": "Iphone 5",
+    "description": "somthing longer",
+    "brand": "Apple",
+    "price": 1000,
+    "imageUrl": "https://images.wired.it/wp-content/uploads/2019/10/28160048/iphone-5-aggiornamento.jpg",
+    "category": "smartphones",
+    "id": "fm0bym9noksemcga1",
+    "createdAt": "2021-08-16T12:34:06.312Z",
+    "updatedAt": "2021-08-16T12:34:06.312Z"
   }
 ]
