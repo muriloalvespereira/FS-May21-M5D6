@@ -75,20 +75,25 @@ Reviews.post(
   }
 );
 
-Reviews.put("/:_id", async (req, resp, next) => {
+Reviews.put("/:_id", reviewValidationMiddleware, async (req, resp, next) => {
   try {
-    const reviewsPath = join(
-      dirname(fileURLToPath(import.meta.url)),
-      "reviews.json"
-    );
-    const reviews = await readJSON(reviewsPath);
-    const remainingReviews = reviews.filter((r) => r._id !== req.params._id);
-    const modifiedReview = { ...req.body, _id: req.params._id };
-    console.log(modifiedReview);
-    remainingReviews.push(modifiedReview);
-    const changeReview = (content) => writeJSON(reviewsPath, content);
-    await changeReview(remainingReviews);
-    resp.send(modifiedReview);
+    const errorsList = validationResult(req);
+    if (!errorsList.isEmpty()) {
+      next(createHttpError(400, { errorsList }));
+    } else {
+      const reviewsPath = join(
+        dirname(fileURLToPath(import.meta.url)),
+        "reviews.json"
+      );
+      const reviews = await readJSON(reviewsPath);
+      const remainingReviews = reviews.filter((r) => r._id !== req.params._id);
+      const modifiedReview = { ...req.body, _id: req.params._id };
+      console.log(modifiedReview);
+      remainingReviews.push(modifiedReview);
+      const changeReview = (content) => writeJSON(reviewsPath, content);
+      await changeReview(remainingReviews);
+      resp.send(modifiedReview);
+    }
   } catch (err) {
     next(err);
   }
