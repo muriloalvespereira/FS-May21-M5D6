@@ -1,8 +1,13 @@
 import express from "express"
 import { getProducts, writeProduct } from "../lib/fs-tools.js"
 import uniqid from "uniqid"
+import { dirname, join } from "path";
+import { fileURLToPath } from "url";
+import fs from "fs-extra";
 
 const Products = express.Router()
+
+const { readJSON } = fs;
 
 Products.post("/", async (req, res) => {
     try {
@@ -19,8 +24,13 @@ Products.post("/", async (req, res) => {
 })
 Products.get("/", async (req, res) => {
     try {
-        const allProducts = await getProducts();       
-        res.status(200).send(allProducts); 
+        const allProducts = await getProducts(); 
+        if (req.query && req.query.category) {
+            const filteredProducts = allProducts.filter(p => p.category === req.query.category)
+            res.send(filteredProducts)
+          } else {
+            res.status(200).send(allProducts); 
+          }     
     } catch (error) {
         res.status(500).send({ success: false, message: "Generic Server Error" }) 
     }
@@ -49,6 +59,22 @@ Products.delete("/:productId", async (req, res) => {
         res.status(204).send(product); 
     } catch (error) {
         res.status(500).send({ success: false, message: "Generic Server Error" }) 
+    }
+})
+
+Products.get("/:productId/reviews", async (req, res) => {
+    try {        
+        const reviewsPath = join(
+            dirname(fileURLToPath(import.meta.url)),
+            "../reviews/reviews.json"
+          );
+          const reviews = await readJSON(reviewsPath);
+          const productReviews = reviews.filter(r => r.productId === req.params.productId)
+
+          res.send(productReviews)
+
+    } catch(error) {
+        res.status(500).send({ success: false, message: "Generic Server Error" })
     }
 })
 
