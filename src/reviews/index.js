@@ -3,6 +3,9 @@ import fs from "fs-extra";
 import { dirname, join } from "path";
 import { fileURLToPath } from "url";
 import uniqid from "uniqid";
+import createHttpError from "http-errors";
+import { reviewValidationMiddleware } from "./validation.js";
+import { validationResult } from "express-validator";
 
 const Reviews = express.Router();
 
@@ -34,30 +37,43 @@ Reviews.get("/:_id", async (req, resp, next) => {
     if (singleReview) {
       resp.send(singleReview);
     } else {
-      console.log("Something went wrong");
+      next(createHttpError(404, `Review with id ${req.params._id} not found!`));
     }
   } catch (err) {
     next(err);
   }
 });
 
-Reviews.post("/:productID", async (req, resp, next) => {
-  try {
-    const reviewsPath = join(
-      dirname(fileURLToPath(import.meta.url)),
-      "reviews.json"
-    );
-    const reviews = await readJSON(reviewsPath);
-    const newReview = { ...req.body, _id: uniqid(), productId: req.params.productID, createdAt: new Date() };
-    const createReview = (content) => writeJSON(reviewsPath, content);
-    reviews.push(newReview);
-    await createReview(reviews);
-    resp.send(reviews);
-    console.log(reviews);
-  } catch (err) {
-    next(err);
+Reviews.post(
+  "/:productID",
+  reviewValidationMiddleware,
+  async (req, resp, next) => {
+    try {
+      const errorsList = validationResult(req);
+      if (!errorsList.isEmpty()) {
+        next(createHttpError(400, { errorsList }));
+      } else {
+        const reviewsPath = join(
+          dirname(fileURLToPath(import.meta.url)),
+          "reviews.json"
+        );
+        const reviews = await readJSON(reviewsPath);
+        const newReview = {
+          ...req.body,
+          _id: uniqid(),
+          productId: req.params.productID,
+          createdAt: new Date(),
+        };
+        const createReview = (content) => writeJSON(reviewsPath, content);
+        reviews.push(newReview);
+        await createReview(reviews);
+        resp.status(201).send({ _id: newReview._id });
+      }
+    } catch (err) {
+      next(err);
+    }
   }
-});
+);
 
 Reviews.put("/:_id", async (req, resp, next) => {
   try {
