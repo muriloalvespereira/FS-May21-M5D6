@@ -65,5 +65,5 @@ server.use(forbiddenErrorHandler);
 server.use(genericServerErrorHandler);
 
 server.listen(PORT, () => {
-  console.log("Server Up");
+  console.log("Server Up" + PORT);
 });

@@ -79,27 +79,23 @@ Products.get("/", async (req, res, next) => {
   }
 });
 
-Products.put(
-  "/:productId",
-  productValidationMiddleware,
-  async (req, res, next) => {
+Products.put("/:productId", async(req, res, next) => {
     try {
       const errorsList = validationResult(req);
       if (!errorsList.isEmpty()) {
         next(createHttpError(400, { errorsList }));
       } else {
-        const allProducts = await getProducts();
+        const allProducts = await Users.find({});
         const product = allProducts.filter(
-          (single) => single.id !== req.params.productId
-        );
-        const updateProduct = {
-          ...req.body,
-          id: req.params.productId,
-          updatedAt: new Date(),
-        };
-        product.push(updateProduct);
-
-        await writeProduct(product);
+          (single) => single._id === req.params.productId
+          );
+          const updateProduct = {
+            ...product,
+            imageUrl: req.body,
+            updatedAt: new Date(),
+          };
+          product.push(updateProduct);
+          await Users.create(product);
         res.status(200).send(updateProduct);
       }
     } catch (error) {
