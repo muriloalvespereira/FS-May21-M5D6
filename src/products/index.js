@@ -83,20 +83,10 @@ Products.put("/:productId", async(req, res, next) => {
     try {
       const errorsList = validationResult(req);
       if (!errorsList.isEmpty()) {
-        next(createHttpError(400, { errorsList }));
+        next(createHttpError(400, { errorsList }));s
       } else {
-        const allProducts = await Users.find({});
-        const product = allProducts.filter(
-          (single) => single._id === req.params.productId
-          );
-          const updateProduct = {
-            ...product,
-            ...req.body,
-            updatedAt: new Date(),
-          };
-          product.push(updateProduct);
-          await Users.create(product);
-        res.status(200).send(updateProduct);
+       const userUpd = await Users.findByIdAndUpdate({_id: req.params.productId}, req.body)
+        res.status(200).send(userUpd);
       }
     } catch (error) {
       next(error);
