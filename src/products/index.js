@@ -15,7 +15,6 @@ import dotenv from "dotenv";
 import Users from "../model/user.js";
 
 dotenv.config();
-console.log(Users);
 
 const Products = express.Router();
 
@@ -57,7 +56,7 @@ Products.post(
   async (req, res, next) => {
     try {
       console.log(req.file);
-      res.send("Uploaded!");
+      res.send({ message: 'Uploaded!' });
     } catch (error) {
       res.status(500).send({ success: false, message: "Generic Server Error" });
     }
