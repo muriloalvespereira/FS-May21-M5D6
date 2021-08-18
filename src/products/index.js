@@ -42,6 +42,7 @@ Products.post("/", async (req, res, next) => {
     if (!errorsList.isEmpty()) {
       next(createHttpError(400, { errorsList }));
     } else {
+        console.log("I am here")
       const user = await Users.create(req.body);
       res.status(201).send(user);
     }
