@@ -1,1 +1,68 @@
-[{"id":"5d318e1a8541744830bef139","name":"3310","description":"somthing longer","brand":"nokia","imageUrl":"http://imageurl.com","price":100,"category":"smartphones","createdAt":"2019-07-19T09:32:10.535Z","updatedAt":"2019-07-19T09:32:10.535Z"},{"name":"Iphone 5","description":"somthing longer","brand":"Apple","price":1000,"imageUrl":"https://images.wired.it/wp-content/uploads/2019/10/28160048/iphone-5-aggiornamento.jpg","category":"smartphones","id":"fm0bym9noksemcga1","createdAt":"2021-08-16T12:34:06.312Z","updatedAt":"2021-08-16T12:34:06.312Z"},{"name":"Samsung Galaxy with validation again","description":"somthing longer","brand":"Samsung","price":500,"imageUrl":"https://images.wired.it/","category":"smartphones","createdAt":"2021-08-16T12:49:58.917Z","id":"jzsz23b0ksemwvba","updatedAt":"2021-08-16T13:12:56.202Z"}]
+[
+  {
+    "name": "Iphone 5",
+    "description": "Refactored phone with 3 months of warranty",
+    "brand": "Apple",
+    "price": 1000,
+    "imageUrl": "https://images.wired.it/wp-content/uploads/2019/10/28160048/iphone-5-aggiornamento.jpg",
+    "category": "smartphones",
+    "id": "fm0bym9noksemcga1",
+    "createdAt": "2021-08-16T12:34:06.312Z",
+    "updatedAt": "2021-08-16T12:34:06.312Z"
+  },
+  {
+    "imageUrl": "http://localhost:3005/img/4384.jpg",
+    "name": "P30 Pro",
+    "category": "smartphone",
+    "brand": "Huawei",
+    "price": "1200",
+    "description": "<p>A very modern smartphone!</p>",
+    "id": "jzsz1r4wkserdust",
+    "createdAt": "2021-08-16T14:55:09.868Z",
+    "updatedAt": "2021-08-16T14:55:09.868Z"
+  },
+  {
+    "imageUrl": "http://localhost:3005/img/976cc1ac-7bdd-4a3e-84ea-f3a6e720d8b3.69e3fc1624f33422f2b792ac27dfd10c.jpeg",
+    "name": "Xiaomi Faster",
+    "category": "smartphone",
+    "brand": "Xiaomi",
+    "price": "985",
+    "description": "<p>A new design with a big powerful!</p>",
+    "id": "jzsz26qskserg821",
+    "createdAt": "2021-08-16T14:57:00.360Z",
+    "updatedAt": "2021-08-16T14:57:00.360Z"
+  },
+  {
+    "imageUrl": "http://localhost:3005/img/maxresdefault.jpg",
+    "name": "Tech Full",
+    "category": "smartphone",
+    "brand": "Oppo",
+    "price": "600",
+    "description": "<p>The best camera in the market!</p>",
+    "id": "jzsz23kckserji2t",
+    "createdAt": "2021-08-16T14:59:33.316Z",
+    "updatedAt": "2021-08-16T14:59:33.316Z"
+  },
+  {
+    "imageUrl": "http://localhost:3005/img/w21.jpg",
+    "name": "Galaxy Note",
+    "category": "smartphone",
+    "brand": "Samsung",
+    "price": "1200",
+    "description": "<p>Your office in your hands!</p>",
+    "id": "jzsz1wlokserkfhm",
+    "createdAt": "2021-08-16T15:00:16.617Z",
+    "updatedAt": "2021-08-16T15:00:16.617Z"
+  },
+  {
+    "imageUrl": "http://localhost:3005/img/SM-G920F_026_Combination-1_Black_Sapphire.jpg",
+    "name": "Moto G",
+    "category": "smartphone",
+    "brand": "Motorola",
+    "price": "500",
+    "description": "<p>The best phone!!!</p>",
+    "id": "jzsz248kkses28z2",
+    "createdAt": "2021-08-16T15:14:07.981Z",
+    "updatedAt": "2021-08-16T15:14:07.981Z"
+  }
+]

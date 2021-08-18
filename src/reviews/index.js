@@ -43,6 +43,25 @@ Reviews.get("/:_id", async (req, resp, next) => {
     next(err);
   }
 });
+ 
+Reviews.get("/product/:productID", async (req, resp, next) => {
+  try {
+    const reviewsPath = join(
+      dirname(fileURLToPath(import.meta.url)),
+      "reviews.json"
+    );
+    const reviews = await readJSON(reviewsPath);
+    console.log(reviews);
+    const singleReview = await reviews.filter((r) => r.productId === req.params.productID);
+    if (singleReview) {
+      resp.send(singleReview);
+    } else {
+      next(createHttpError(404, `Review with id ${req.params._id} not found!`));
+    }
+  } catch (err) {
+    next(err);
+  }
+});
 
 Reviews.post(
   "/:productID",

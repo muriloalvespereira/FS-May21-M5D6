@@ -19,12 +19,15 @@
   },
   "homepage": "https://github.com/muriloalvespereira/FS-May21-M5D6#readme",
   "dependencies": {
+    "cloudinary": "^1.26.3",
     "cors": "^2.8.5",
+    "dotenv": "^10.0.0",
     "express": "^4.17.1",
     "express-validator": "^6.12.1",
     "fs-extra": "^10.0.0",
     "http-errors": "^1.8.0",
     "multer": "^1.4.3",
+    "multer-storage-cloudinary": "^4.0.0",
     "nodemon": "^2.0.12",
     "uniqid": "^5.3.0"
   }

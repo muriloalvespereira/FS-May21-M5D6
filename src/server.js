@@ -18,7 +18,6 @@ const publicFolderPath = join(process.cwd(), "public")
 
 
 server.use(express.static(publicFolderPath))
-console.log(publicFolderPath)
 
 server.use(cors())
 server.use(express.json()) 

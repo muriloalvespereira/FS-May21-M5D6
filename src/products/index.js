@@ -9,10 +9,30 @@ import { validationResult } from "express-validator";
 import createHttpError from "http-errors";
 import multer from "multer";
 import { saveProductPicture } from "../lib/fs-tools.js";
+import { v2 as cloudinary } from "cloudinary"
+import { CloudinaryStorage } from "multer-storage-cloudinary"
+import dotenv from "dotenv"
+
+dotenv.config();
 
 const Products = express.Router();
 
 const { readJSON } = fs;
+
+const { CLOUDINARY_NAME, CLOUDINARY_KEY, CLOUDINARY_SECRET } = process.env;
+
+cloudinary.config({
+    cloud_name: CLOUDINARY_NAME,
+    api_key: CLOUDINARY_KEY,
+    api_secret: CLOUDINARY_SECRET,
+  });
+
+const cloudinaryStorage = new CloudinaryStorage({
+    cloudinary, // grabs CLOUDINARY_URL from process.env.CLOUDINARY_URL
+    params: {
+      folder: "products",
+    },
+  })
 
 Products.post("/", productValidationMiddleware, async (req, res, next) => {
   try {
@@ -37,9 +57,9 @@ Products.post("/", productValidationMiddleware, async (req, res, next) => {
   }
 });
 
-Products.post("/addimg", multer().single("image"), async (req, res) => {
+Products.post("/addimg", multer({ storage: cloudinaryStorage }).single("image"), async (req, res, next) => {
   try {
-    await saveProductPicture(req.file.originalname, req.file.buffer);
+      console.log(req.file)
     res.send("Uploaded!");
   } catch (error) {
     res.status(500).send({ success: false, message: "Generic Server Error" });
@@ -48,7 +68,7 @@ Products.post("/addimg", multer().single("image"), async (req, res) => {
 
 Products.get("/", async (req, res, next) => {
   try {
-    const allProducts = await getProduct();
+    const allProducts = await getProducts();
     if (req.query && req.query.category) {
       const filteredProducts = allProducts.filter(
         (p) => p.category === req.query.category
@@ -115,6 +135,23 @@ Products.get("/:productId/reviews", async (req, res, next) => {
   } catch (error) {
     next(error);
   }
+});
+
+Products.get("/:productId", async (req, res, next) => {
+    try {
+        const errorsList = validationResult(req);
+        if (!errorsList.isEmpty()) {
+          next(createHttpError(400, { errorsList }));
+        } else {
+          const allProducts = await getProducts();
+          const product = allProducts.filter(
+            (single) => single.id == req.params.productId
+          );       
+          res.status(200).send(product);
+        }
+      } catch (error) {
+        next(error);
+      }
 });
 
 export default Products;
