@@ -9,11 +9,13 @@ import { validationResult } from "express-validator";
 import createHttpError from "http-errors";
 import multer from "multer";
 import { saveProductPicture } from "../lib/fs-tools.js";
-import { v2 as cloudinary } from "cloudinary"
-import { CloudinaryStorage } from "multer-storage-cloudinary"
-import dotenv from "dotenv"
+import { v2 as cloudinary } from "cloudinary";
+import { CloudinaryStorage } from "multer-storage-cloudinary";
+import dotenv from "dotenv";
+import Users from "../model/user.js";
 
 dotenv.config();
+console.log(Users);
 
 const Products = express.Router();
 
@@ -28,43 +30,38 @@ const { readJSON } = fs;
 //   });
 
 const cloudinaryStorage = new CloudinaryStorage({
-    cloudinary, // grabs CLOUDINARY_URL from process.env.CLOUDINARY_URL
-    params: {
-      folder: "products",
-    },
-  })
+  cloudinary, // grabs CLOUDINARY_URL from process.env.CLOUDINARY_URL
+  params: {
+    folder: "products",
+  },
+});
 
-Products.post("/", productValidationMiddleware, async (req, res, next) => {
+Products.post("/", async (req, res, next) => {
   try {
     const errorsList = validationResult(req);
     if (!errorsList.isEmpty()) {
       next(createHttpError(400, { errorsList }));
     } else {
-      const allProducts = await getProducts();
-      const product = {
-        ...req.body,
-        id: uniqid(),
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      };
-      allProducts.push(product);
-
-      await writeProduct(allProducts);
-      res.status(201).send(product);
+      const user = await Users.create(req.body);
+      res.status(201).send(user);
     }
   } catch (error) {
     next(error);
   }
 });
 
-Products.post("/addimg", multer({ storage: cloudinaryStorage }).single("image"), async (req, res, next) => {
-  try {
-      console.log(req.file)
-    res.send("Uploaded!");
-  } catch (error) {
-    res.status(500).send({ success: false, message: "Generic Server Error" });
+Products.post(
+  "/addimg",
+  multer({ storage: cloudinaryStorage }).single("image"),
+  async (req, res, next) => {
+    try {
+      console.log(req.file);
+      res.send("Uploaded!");
+    } catch (error) {
+      res.status(500).send({ success: false, message: "Generic Server Error" });
+    }
   }
-});
+);
 
 Products.get("/", async (req, res, next) => {
   try {
@@ -82,30 +79,34 @@ Products.get("/", async (req, res, next) => {
   }
 });
 
-Products.put("/:productId", productValidationMiddleware, async (req, res, next) => {
-  try {
-    const errorsList = validationResult(req);
-    if (!errorsList.isEmpty()) {
-      next(createHttpError(400, { errorsList }));
-    } else {
-      const allProducts = await getProducts();
-      const product = allProducts.filter(
-        (single) => single.id !== req.params.productId
-      );
-      const updateProduct = {
-        ...req.body,
-        id: req.params.productId,
-        updatedAt: new Date(),
-      };
-      product.push(updateProduct);
+Products.put(
+  "/:productId",
+  productValidationMiddleware,
+  async (req, res, next) => {
+    try {
+      const errorsList = validationResult(req);
+      if (!errorsList.isEmpty()) {
+        next(createHttpError(400, { errorsList }));
+      } else {
+        const allProducts = await getProducts();
+        const product = allProducts.filter(
+          (single) => single.id !== req.params.productId
+        );
+        const updateProduct = {
+          ...req.body,
+          id: req.params.productId,
+          updatedAt: new Date(),
+        };
+        product.push(updateProduct);
 
-      await writeProduct(product);
-      res.status(200).send(updateProduct);
+        await writeProduct(product);
+        res.status(200).send(updateProduct);
+      }
+    } catch (error) {
+      next(error);
     }
-  } catch (error) {
-    next(error);
   }
-});
+);
 Products.delete("/:productId", async (req, res, next) => {
   try {
     const allProducts = await getProducts();
@@ -138,20 +139,20 @@ Products.get("/:productId/reviews", async (req, res, next) => {
 });
 
 Products.get("/:productId", async (req, res, next) => {
-    try {
-        const errorsList = validationResult(req);
-        if (!errorsList.isEmpty()) {
-          next(createHttpError(400, { errorsList }));
-        } else {
-          const allProducts = await getProducts();
-          const product = allProducts.filter(
-            (single) => single.id == req.params.productId
-          );       
-          res.status(200).send(product);
-        }
-      } catch (error) {
-        next(error);
-      }
+  try {
+    const errorsList = validationResult(req);
+    if (!errorsList.isEmpty()) {
+      next(createHttpError(400, { errorsList }));
+    } else {
+      const allProducts = await getProducts();
+      const product = allProducts.filter(
+        (single) => single.id == req.params.productId
+      );
+      res.status(200).send(product);
+    }
+  } catch (error) {
+    next(error);
+  }
 });
 
 export default Products;
