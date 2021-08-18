@@ -19,7 +19,21 @@ const publicFolderPath = join(process.cwd(), "public")
 
 server.use(express.static(publicFolderPath))
 
-server.use(cors())
+
+const whitelist= [process.env.FE_DEV_URL, process.env.FE_PROD_URL]
+
+const corsOpts = {
+    origin: function(origin, next){
+      console.log('ORIGIN --> ', origin)
+      if(!origin || whitelist.indexOf(origin) !== -1){ // if received origin is in the whitelist I'm going to allow that request
+        next(null, true)
+      }else{ // if it is not, I'm going to reject that request
+        next(new Error(`Origin ${origin} not allowed!`))
+      }
+    }
+  }
+
+server.use(cors(corsOpts))
 server.use(express.json()) 
 
 server.use("/products", Products);
