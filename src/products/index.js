@@ -56,7 +56,7 @@ Products.post(
   async (req, res, next) => {
     try {
       console.log(req.file);
-      res.send(req.file.path);
+      res.send(req.file);
     } catch (error) {
       res.status(500).send({ success: false, message: "Generic Server Error" });
     }
