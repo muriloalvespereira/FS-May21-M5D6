@@ -15,4 +15,4 @@ const UserSchema = new Schema({
 );
 
 
-export default mongoose.model('User', UserSchema, 'test');
+export default mongoose.model('User', UserSchema, 'marketplace');
