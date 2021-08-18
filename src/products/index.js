@@ -19,13 +19,13 @@ const Products = express.Router();
 
 const { readJSON } = fs;
 
-const { CLOUDINARY_NAME, CLOUDINARY_KEY, CLOUDINARY_SECRET } = process.env;
+// const { CLOUDINARY_NAME, CLOUDINARY_KEY, CLOUDINARY_SECRET } = process.env;
 
-cloudinary.config({
-    cloud_name: CLOUDINARY_NAME,
-    api_key: CLOUDINARY_KEY,
-    api_secret: CLOUDINARY_SECRET,
-  });
+// cloudinary.config({
+//     cloud_name: CLOUDINARY_NAME,
+//     api_key: CLOUDINARY_KEY,
+//     api_secret: CLOUDINARY_SECRET,
+//   });
 
 const cloudinaryStorage = new CloudinaryStorage({
     cloudinary, // grabs CLOUDINARY_URL from process.env.CLOUDINARY_URL
