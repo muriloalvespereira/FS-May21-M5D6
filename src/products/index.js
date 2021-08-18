@@ -91,7 +91,7 @@ Products.put("/:productId", async(req, res, next) => {
           );
           const updateProduct = {
             ...product,
-            imageUrl: req.body,
+            ...req.body,
             updatedAt: new Date(),
           };
           product.push(updateProduct);
