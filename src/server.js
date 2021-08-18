@@ -12,7 +12,7 @@ import {
 } from "./errorHandlers.js";
 
 const server = express()
-const port = 3005
+const { PORT } = process.env;
 
 const publicFolderPath = join(process.cwd(), "public")
 
@@ -44,6 +44,6 @@ server.use(badRequestErrorHandler);
 server.use(forbiddenErrorHandler);
 server.use(genericServerErrorHandler);
 
-server.listen(port, () => {
+server.listen(PORT, () => {
   console.log("Server Up");
 });
