@@ -1,18 +1,20 @@
 import express from "express";
-import { getProducts, writeProduct } from "../lib/fs-tools.js";
-import uniqid from "uniqid";
+import { getProducts, writeProduct, getItemsReadableStream } from "../lib/fs-tools.js";
+// import uniqid from "uniqid";
 import { dirname, join } from "path";
 import { fileURLToPath } from "url";
 import fs from "fs-extra";
-import { productValidationMiddleware } from "./validation.js";
+// import { productValidationMiddleware } from "./validation.js";
 import { validationResult } from "express-validator";
 import createHttpError from "http-errors";
 import multer from "multer";
-import { saveProductPicture } from "../lib/fs-tools.js";
+// import { saveProductPicture } from "../lib/fs-tools.js";
 import { v2 as cloudinary } from "cloudinary";
 import { CloudinaryStorage } from "multer-storage-cloudinary";
 import dotenv from "dotenv";
 import Users from "../model/user.js";
+import json2csv from "json2csv";
+import { pipeline } from "stream"
 
 dotenv.config();
 
@@ -76,6 +78,22 @@ Products.get("/", async (req, res, next) => {
     }
   } catch (error) {
     next(error);
+  }
+});
+
+Products.get("/csv", async (req, res, next) => {
+  try {
+    const filename = "file.csv"
+    res.setHeader("Content-Disposition", `attachment; filename=${filename}`)
+    const source = getItemsReadableStream()
+    const transform = new json2csv.Transform({ fields: ["name", "category", "brand", "price"] })
+    const destination = res
+
+    pipeline(source, transform, destination, err => {
+      if (err) next(err)
+    })
+  } catch (error) {
+    next(error)
   }
 });
 
