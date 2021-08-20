@@ -1,5 +1,10 @@
 import express from "express";
-import { getProducts, writeProduct, getItemsReadableStream } from "../lib/fs-tools.js";
+import {
+  getProducts,
+  writeProduct,
+  getItemsReadableStream
+} from "../lib/fs-tools.js";
+import { getPDFReadableStream } from "../lib/pdf.js"
 // import uniqid from "uniqid";
 import { dirname, join } from "path";
 import { fileURLToPath } from "url";
@@ -14,7 +19,8 @@ import { CloudinaryStorage } from "multer-storage-cloudinary";
 import dotenv from "dotenv";
 import Users from "../model/user.js";
 import json2csv from "json2csv";
-import { pipeline } from "stream"
+import { pipeline } from "stream";
+import { sendEmail } from "../lib/email.js";
 
 dotenv.config();
 
@@ -43,7 +49,7 @@ Products.post("/", async (req, res, next) => {
     if (!errorsList.isEmpty()) {
       next(createHttpError(400, { errorsList }));
     } else {
-        console.log("I am here")
+      console.log("I am here");
       const user = await Users.create(req.body);
       res.status(201).send(user);
     }
@@ -52,9 +58,7 @@ Products.post("/", async (req, res, next) => {
   }
 });
 
-Products.post(
-  "/addimg",
-  multer({ storage: cloudinaryStorage }).single("image"),
+Products.post("/addimg", multer({ storage: cloudinaryStorage }).single("image"),
   async (req, res, next) => {
     try {
       console.log(req.file);
@@ -64,6 +68,18 @@ Products.post(
     }
   }
 );
+
+Products.post("/sendemail", async (req, res, next) => {
+  const { email } = req.body;
+  console.log(email)
+  try {
+    await sendEmail(email);
+    res.send("Email Sent!");
+    
+  } catch (error) {
+   res.status(error.code||500).send({message:error.message})
+  }
+});
 
 Products.get("/", async (req, res, next) => {
   try {
@@ -83,34 +99,58 @@ Products.get("/", async (req, res, next) => {
 
 Products.get("/csv", async (req, res, next) => {
   try {
-    const filename = "file.csv"
-    res.setHeader("Content-Disposition", `attachment; filename=${filename}`)
-    const source = getItemsReadableStream()
-    const transform = new json2csv.Transform({ fields: ["name", "category", "brand", "price"] })
-    const destination = res
+    const filename = "file.csv";
+    res.setHeader("Content-Disposition", `attachment; filename=${filename}`);
+    const source = getItemsReadableStream();
+    const transform = new json2csv.Transform({
+      fields: ["name", "category", "brand", "price"],
+    });
+    const destination = res;
 
-    pipeline(source, transform, destination, err => {
-      if (err) next(err)
-    })
+    pipeline(source, transform, destination, (err) => {
+      if (err) next(err);
+    });
   } catch (error) {
-    next(error)
+    next(error);
   }
 });
 
-Products.put("/:productId", async(req, res, next) => {
-    try {
-      const errorsList = validationResult(req);
-      if (!errorsList.isEmpty()) {
-        next(createHttpError(400, { errorsList }));s
-      } else {
-       const userUpd = await Users.findByIdAndUpdate({_id: req.params.productId}, req.body)
-        res.status(200).send(userUpd);
-      }
-    } catch (error) {
-      next(error);
-    }
+Products.get("/pdf/:productId", async (req, res, next) => {
+  try {
+    const allProducts = await getProducts();
+    const product = allProducts.filter((single) => single.id === req.params.productId);
+    // const filename = "test.pdf"
+    // res.setHeader("Content-Disposition", `attachment; filename=${filename}`)
+    // const source = await getPDFReadableStream(product)
+    // const destination = res
+    const path = await getPDFReadableStream(product, req)
+    console.log(path)
+    res.download(path)
+    // pipeline(source, destination, err => {
+    //   if (err) next(err)
+    // })
+  } catch (error) {
+    next(error)
   }
-);
+})
+
+Products.put("/:productId", async (req, res, next) => {
+  try {
+    const errorsList = validationResult(req);
+    if (!errorsList.isEmpty()) {
+      next(createHttpError(400, { errorsList }));
+      s;
+    } else {
+      const userUpd = await Users.findByIdAndUpdate(
+        { _id: req.params.productId },
+        req.body
+      );
+      res.status(200).send(userUpd);
+    }
+  } catch (error) {
+    next(error);
+  }
+});
 Products.delete("/:productId", async (req, res, next) => {
   try {
     const allProducts = await getProducts();

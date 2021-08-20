@@ -6,6 +6,7 @@ const { readJSON, writeJSON, writeFile, createReadStream } = fs
 
 const productsJSONPath = join(dirname(fileURLToPath(import.meta.url)), "../products/products.json")
 const publicFolderPath = join(dirname(fileURLToPath(import.meta.url)), "../../public/img/")
+const publicFolderPathPDF = join(dirname(fileURLToPath(import.meta.url)), "../../public/pdf/")
 
 export const getProducts = () => readJSON(productsJSONPath)
 export const writeProduct = content => writeJSON(productsJSONPath, content)

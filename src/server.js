@@ -16,6 +16,7 @@ import mongoose from 'mongoose';
 const server = express()
 const { PORT } = process.env;
 
+
 const publicFolderPath = join(process.cwd(), "public")
 
 const url = config.bd_string;
