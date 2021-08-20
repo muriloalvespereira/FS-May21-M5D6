@@ -69,9 +69,9 @@ export const getPDFReadableStream = async (data, req) => {
       dirname(fileURLToPath(import.meta.url)),
       `../../public/pdf/${req.params.productId}.pdf`
     );
-    console.log(path, "para o ver path")
     // const path = join(dirname(fileURLToPath(import.meta.url)), "test.pdf")
     await asyncPipeline(pdfReadableStream, fs.createWriteStream(path)); // generatePDFAsync will await for the stream to end before returning
+    console.log("cheguei aqui")
     return path;
   } catch (error) {
     throw error;
