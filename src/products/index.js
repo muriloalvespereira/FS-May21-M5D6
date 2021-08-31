@@ -28,14 +28,6 @@ const Products = express.Router();
 
 const { readJSON } = fs;
 
-// const { CLOUDINARY_NAME, CLOUDINARY_KEY, CLOUDINARY_SECRET } = process.env;
-
-// cloudinary.config({
-//     cloud_name: CLOUDINARY_NAME,
-//     api_key: CLOUDINARY_KEY,
-//     api_secret: CLOUDINARY_SECRET,
-//   });
-
 const cloudinaryStorage = new CloudinaryStorage({
   cloudinary, // grabs CLOUDINARY_URL from process.env.CLOUDINARY_URL
   params: {
@@ -81,17 +73,26 @@ Products.post("/sendemail", async (req, res, next) => {
   }
 });
 
+// Products.get("/", async (req, res, next) => {
+//   try {
+//     const allProducts = await getProducts();
+//     if (req.query && req.query.category) {
+//       const filteredProducts = allProducts.filter(
+//         (p) => p.category === req.query.category
+//       );
+//       res.send(filteredProducts);
+//     } else {
+//       res.status(200).send(allProducts);
+//     }
+//   } catch (error) {
+//     next(error);
+//   }
+// });
+
 Products.get("/", async (req, res, next) => {
   try {
-    const allProducts = await getProducts();
-    if (req.query && req.query.category) {
-      const filteredProducts = allProducts.filter(
-        (p) => p.category === req.query.category
-      );
-      res.send(filteredProducts);
-    } else {
+    const allProducts = await Users.find();
       res.status(200).send(allProducts);
-    }
   } catch (error) {
     next(error);
   }
@@ -145,7 +146,7 @@ Products.put("/:productId", async (req, res, next) => {
         { _id: req.params.productId },
         req.body
       );
-      res.status(200).send(userUpd);
+      res.status(200).send(req.body);
     }
   } catch (error) {
     next(error);
