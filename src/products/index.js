@@ -116,10 +116,28 @@ Products.get("/csv", async (req, res, next) => {
   }
 });
 
+// Products.get("/pdf/:productId", async (req, res, next) => {
+//   try {
+//     const allProducts = await getProducts();
+//     const product = allProducts.filter((single) => single.id === req.params.productId);
+//     // const filename = "test.pdf"
+//     // res.setHeader("Content-Disposition", `attachment; filename=${filename}`)
+//     // const source = await getPDFReadableStream(product)
+//     // const destination = res
+//     const path = await getPDFReadableStream(product, req)
+//     console.log(path)
+//     res.download(path)
+//     // pipeline(source, destination, err => {
+//     //   if (err) next(err)
+//     // })
+//   } catch (error) {
+//     next(error)
+//   }
+// })
+
 Products.get("/pdf/:productId", async (req, res, next) => {
   try {
-    const allProducts = await getProducts();
-    const product = allProducts.filter((single) => single.id === req.params.productId);
+    const product = await Users.findById(req.params.productId);
     // const filename = "test.pdf"
     // res.setHeader("Content-Disposition", `attachment; filename=${filename}`)
     // const source = await getPDFReadableStream(product)
