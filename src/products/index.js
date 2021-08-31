@@ -206,7 +206,7 @@ Products.get("/:productId", async (req, res, next) => {
     if (!errorsList.isEmpty()) {
       next(createHttpError(400, { errorsList }));
     } else {
-      const product = Users.findById(req.params.productId);
+      const product = await Users.findById(req.params.productId);
       res.status(200).send(product);
     }
   } catch (error) {
