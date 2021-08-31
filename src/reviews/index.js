@@ -63,10 +63,40 @@ Reviews.get("/product/:productID", async (req, resp, next) => {
   }
 });
 
-Reviews.post(
-  "/:productID",
-  reviewValidationMiddleware,
-  async (req, resp, next) => {
+// Reviews.post(
+//   "/:productID",
+//   reviewValidationMiddleware,
+//   async (req, resp, next) => {
+//     try {
+//       const errorsList = validationResult(req);
+//       if (!errorsList.isEmpty()) {
+//         next(createHttpError(400, { errorsList }));
+//       } else {
+//         const reviewsPath = join(
+//           dirname(fileURLToPath(import.meta.url)),
+//           "reviews.json"
+//         );
+//         const reviews = await readJSON(reviewsPath);
+//         const newReview = {
+//           ...req.body,
+//           _id: uniqid(),
+//           productId: req.params.productID,
+//           createdAt: new Date(),
+//         };
+//         const createReview = (content) => writeJSON(reviewsPath, content);
+//         reviews.push(newReview);
+//         await createReview(reviews);
+//         resp.status(201).send({ _id: newReview._id });
+//       }
+//     } catch (err) {
+//       next(err);
+//     }
+//   }
+// );
+
+
+
+Reviews.post("/:productID", reviewValidationMiddleware, async (req, resp, next) => {
     try {
       const errorsList = validationResult(req);
       if (!errorsList.isEmpty()) {

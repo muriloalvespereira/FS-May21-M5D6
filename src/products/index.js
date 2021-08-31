@@ -152,19 +152,32 @@ Products.put("/:productId", async (req, res, next) => {
     next(error);
   }
 });
+
+// Products.delete("/:productId", async (req, res, next) => {
+//   try {
+//     const allProducts = await getProducts();
+//     const product = allProducts.filter(
+//       (single) => single.id !== req.params.productId
+//     );
+
+//     await writeProduct(product);
+//     res.status(204).send(product);
+//   } catch (error) {
+//     next(error);
+//   }
+// });
+
+
 Products.delete("/:productId", async (req, res, next) => {
   try {
-    const allProducts = await getProducts();
-    const product = allProducts.filter(
-      (single) => single.id !== req.params.productId
-    );
-
-    await writeProduct(product);
+    const product = await Users.findByIdAndDelete(req.params.productId);
     res.status(204).send(product);
   } catch (error) {
     next(error);
   }
 });
+
+
 
 Products.get("/:productId/reviews", async (req, res, next) => {
   try {
