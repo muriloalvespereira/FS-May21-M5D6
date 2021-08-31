@@ -29,7 +29,7 @@ export const getPDFReadableStream = async (data, req) => {
   try {
     const asyncPipeline = promisify(pipeline);
     const printer = new PdfPrinter(fonts);
-    let encondedImage = await convertImageURL(data[0].imageUrl);
+    let encondedImage = await convertImageURL(data.imageUrl);
 
     const docDefinition = {
       pageSize: "A4",
@@ -38,7 +38,7 @@ export const getPDFReadableStream = async (data, req) => {
       content: [
         {
           //styling
-          text: `${data[0].name}`,
+          text: `${data.name}`,
           alignment: "center",
           // margin: [left, top, right, bottom]
           margin: [0, 0, 0, 24],
@@ -51,7 +51,7 @@ export const getPDFReadableStream = async (data, req) => {
         },
         {
           //convert html into text for pdf maker needs to pass the window to the htmlToPdfmaker when using node
-          text: htmlToPdfmake(data[0].description, { window: window }),
+          text: htmlToPdfmake(data.description, { window: window }),
           margin: [0, 24, 0, 0],
           fontSize: 16,
           lineHeight: 1.4,
