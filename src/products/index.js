@@ -183,16 +183,30 @@ Products.get("/:productId/reviews", async (req, res, next) => {
   }
 });
 
+// Products.get("/:productId", async (req, res, next) => {
+//   try {
+//     const errorsList = validationResult(req);
+//     if (!errorsList.isEmpty()) {
+//       next(createHttpError(400, { errorsList }));
+//     } else {
+//       const allProducts = await getProducts();
+//       const product = allProducts.filter(
+//         (single) => single.id == req.params.productId
+//       );
+//       res.status(200).send(product);
+//     }
+//   } catch (error) {
+//     next(error);
+//   }
+// });
+
 Products.get("/:productId", async (req, res, next) => {
   try {
     const errorsList = validationResult(req);
     if (!errorsList.isEmpty()) {
       next(createHttpError(400, { errorsList }));
     } else {
-      const allProducts = await getProducts();
-      const product = allProducts.filter(
-        (single) => single.id == req.params.productId
-      );
+      const product = Users.findById(req.params.productId);
       res.status(200).send(product);
     }
   } catch (error) {
