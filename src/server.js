@@ -3,6 +3,7 @@ import express from "express"
 import cors from "cors"
 import ProductsRouter from "./products/index.js"
 import ReviewsRouter from "./reviews/index.js"
+import cartRouter from "./carts/index.js"
 import { join } from "path"
 import {
   notFoundErrorHandler,
@@ -59,6 +60,7 @@ server.use(express.json())
 
 server.use("/products", ProductsRouter);
 server.use("/reviews", ReviewsRouter);
+server.use("/carts", cartRouter);
 
 server.use(notFoundErrorHandler);
 server.use(badRequestErrorHandler);
