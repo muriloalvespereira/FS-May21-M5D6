@@ -1,9 +1,5 @@
 import express from "express";
-import {
-  getProducts,
-  writeProduct,
-  getItemsReadableStream
-} from "../lib/fs-tools.js";
+import { getItemsReadableStream } from "../lib/fs-tools.js";
 import { getPDFReadableStream } from "../lib/pdf.js"
 // import uniqid from "uniqid";
 import { dirname, join } from "path";
@@ -17,41 +13,40 @@ import multer from "multer";
 import { v2 as cloudinary } from "cloudinary";
 import { CloudinaryStorage } from "multer-storage-cloudinary";
 import dotenv from "dotenv";
-import Users from "../model/user.js";
+import Products from "../model/product.js";
 import json2csv from "json2csv";
 import { pipeline } from "stream";
 import { sendEmail } from "../lib/email.js";
 
 dotenv.config();
 
-const Products = express.Router();
+const ProductsRouter = express.Router();
 
 const { readJSON } = fs;
 
 const cloudinaryStorage = new CloudinaryStorage({
   cloudinary, // grabs CLOUDINARY_URL from process.env.CLOUDINARY_URL
   params: {
-    folder: "products",
+    folder: "Products",
   },
 });
 
-Products.post("/", async (req, res, next) => {
+ProductsRouter.post("/", async (req, res, next) => {
   try {
     const errorsList = validationResult(req);
     if (!errorsList.isEmpty()) {
       next(createHttpError(400, { errorsList }));
     } else {
       console.log("I am here");
-      const user = await Users.create(req.body);
-      res.status(201).send(user);
+      const newProduct = await Products.create(req.body);
+      res.status(201).send(newProduct);
     }
   } catch (error) {
     next(error);
   }
 });
 
-Products.post("/addimg", multer({ storage: cloudinaryStorage }).single("image"),
-  async (req, res, next) => {
+ProductsRouter.post("/addimg", multer({ storage: cloudinaryStorage }).single("image"), async (req, res, next) => {
     try {
       console.log(req.file);
       res.send(req.file);
@@ -61,7 +56,7 @@ Products.post("/addimg", multer({ storage: cloudinaryStorage }).single("image"),
   }
 );
 
-Products.post("/sendemail", async (req, res, next) => {
+ProductsRouter.post("/sendemail", async (req, res, next) => {
   const { email } = req.body;
   console.log(email)
   try {
@@ -73,32 +68,32 @@ Products.post("/sendemail", async (req, res, next) => {
   }
 });
 
-// Products.get("/", async (req, res, next) => {
+// ProductsRouter.get("/", async (req, res, next) => {
 //   try {
-//     const allProducts = await getProducts();
+//     const allProductsRouter = await getProductsRouter();
 //     if (req.query && req.query.category) {
-//       const filteredProducts = allProducts.filter(
+//       const filteredProductsRouter = allProductsRouter.filter(
 //         (p) => p.category === req.query.category
 //       );
-//       res.send(filteredProducts);
+//       res.send(filteredProductsRouter);
 //     } else {
-//       res.status(200).send(allProducts);
+//       res.status(200).send(allProductsRouter);
 //     }
 //   } catch (error) {
 //     next(error);
 //   }
 // });
 
-Products.get("/", async (req, res, next) => {
+ProductsRouter.get("/", async (req, res, next) => {
   try {
-    const allProducts = await Users.find();
-      res.status(200).send(allProducts);
+    const allProductsRouter = await Products.find();
+      res.status(200).send(allProductsRouter);
   } catch (error) {
     next(error);
   }
 });
 
-Products.get("/csv", async (req, res, next) => {
+ProductsRouter.get("/csv", async (req, res, next) => {
   try {
     const filename = "file.csv";
     res.setHeader("Content-Disposition", `attachment; filename=${filename}`);
@@ -116,10 +111,10 @@ Products.get("/csv", async (req, res, next) => {
   }
 });
 
-// Products.get("/pdf/:productId", async (req, res, next) => {
+// ProductsRouter.get("/pdf/:productId", async (req, res, next) => {
 //   try {
-//     const allProducts = await getProducts();
-//     const product = allProducts.filter((single) => single.id === req.params.productId);
+//     const allProductsRouter = await getProductsRouter();
+//     const product = allProductsRouter.filter((single) => single.id === req.params.productId);
 //     // const filename = "test.pdf"
 //     // res.setHeader("Content-Disposition", `attachment; filename=${filename}`)
 //     // const source = await getPDFReadableStream(product)
@@ -135,9 +130,9 @@ Products.get("/csv", async (req, res, next) => {
 //   }
 // })
 
-Products.get("/pdf/:productId", async (req, res, next) => {
+ProductsRouter.get("/pdf/:productId", async (req, res, next) => {
   try {
-    const product = await Users.findById(req.params.productId);
+    const product = await Products.findById(req.params.productId);
     // const filename = "test.pdf"
     // res.setHeader("Content-Disposition", `attachment; filename=${filename}`)
     // const source = await getPDFReadableStream(product)
@@ -153,28 +148,31 @@ Products.get("/pdf/:productId", async (req, res, next) => {
   }
 })
 
-Products.put("/:productId", async (req, res, next) => {
+ProductsRouter.put("/:productId", async (req, res, next) => {
   try {
     const errorsList = validationResult(req);
     if (!errorsList.isEmpty()) {
       next(createHttpError(400, { errorsList }));
       s;
     } else {
-      const userUpd = await Users.findByIdAndUpdate(
+      const userUpd = await Products.findByIdAndUpdate(
         { _id: req.params.productId },
-        req.body
+        req.body,
+        {
+          new: true
+        }
       );
-      res.status(200).send(req.body);
+      res.status(200).send(userUpd);
     }
   } catch (error) {
     next(error);
   }
 });
 
-// Products.delete("/:productId", async (req, res, next) => {
+// ProductsRouter.delete("/:productId", async (req, res, next) => {
 //   try {
-//     const allProducts = await getProducts();
-//     const product = allProducts.filter(
+//     const allProductsRouter = await getProductsRouter();
+//     const product = allProductsRouter.filter(
 //       (single) => single.id !== req.params.productId
 //     );
 
@@ -186,9 +184,9 @@ Products.put("/:productId", async (req, res, next) => {
 // });
 
 
-Products.delete("/:productId", async (req, res, next) => {
+ProductsRouter.delete("/:productId", async (req, res, next) => {
   try {
-    const product = await Users.findByIdAndDelete(req.params.productId);
+    const product = await Products.findByIdAndDelete(req.params.productId);
     res.status(204).send(product);
   } catch (error) {
     next(error);
@@ -197,7 +195,7 @@ Products.delete("/:productId", async (req, res, next) => {
 
 
 
-Products.get("/:productId/reviews", async (req, res, next) => {
+ProductsRouter.get("/:productId/reviews", async (req, res, next) => {
   try {
     const reviewsPath = join(
       dirname(fileURLToPath(import.meta.url)),
@@ -214,14 +212,14 @@ Products.get("/:productId/reviews", async (req, res, next) => {
   }
 });
 
-// Products.get("/:productId", async (req, res, next) => {
+// ProductsRouter.get("/:productId", async (req, res, next) => {
 //   try {
 //     const errorsList = validationResult(req);
 //     if (!errorsList.isEmpty()) {
 //       next(createHttpError(400, { errorsList }));
 //     } else {
-//       const allProducts = await getProducts();
-//       const product = allProducts.filter(
+//       const allProductsRouter = await getProductsRouter();
+//       const product = allProductsRouter.filter(
 //         (single) => single.id == req.params.productId
 //       );
 //       res.status(200).send(product);
@@ -231,13 +229,13 @@ Products.get("/:productId/reviews", async (req, res, next) => {
 //   }
 // });
 
-Products.get("/:productId", async (req, res, next) => {
+ProductsRouter.get("/:productId", async (req, res, next) => {
   try {
     const errorsList = validationResult(req);
     if (!errorsList.isEmpty()) {
       next(createHttpError(400, { errorsList }));
     } else {
-      const product = await Users.findById(req.params.productId);
+      const product = await Products.findById(req.params.productId).populate("comments");
       res.status(200).send(product);
     }
   } catch (error) {
@@ -245,4 +243,4 @@ Products.get("/:productId", async (req, res, next) => {
   }
 });
 
-export default Products;
+export default ProductsRouter;

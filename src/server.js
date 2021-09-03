@@ -1,8 +1,8 @@
 
 import express from "express"
 import cors from "cors"
-import Products from "./products/index.js"
-import Reviews from "./reviews/index.js"
+import ProductsRouter from "./products/index.js"
+import ReviewsRouter from "./reviews/index.js"
 import { join } from "path"
 import {
   notFoundErrorHandler,
@@ -57,8 +57,8 @@ const corsOpts = {
 server.use(cors(corsOpts))
 server.use(express.json()) 
 
-server.use("/products", Products);
-server.use("/reviews", Reviews);
+server.use("/products", ProductsRouter);
+server.use("/reviews", ReviewsRouter);
 
 server.use(notFoundErrorHandler);
 server.use(badRequestErrorHandler);
